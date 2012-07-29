@@ -2,6 +2,7 @@ LSB-Steganography
 =================
 
 Python program to steganography files into images using the Least Significant Bit technics.
+
 Article : http://robindavid.comli.com/lsb-steganography-with-opencv/
 
 Informations
