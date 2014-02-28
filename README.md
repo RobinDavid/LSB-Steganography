@@ -3,7 +3,8 @@ LSB-Steganography
 
 Python program to steganography files into images using the Least Significant Bit technics.
 
-Article : http://robindavid.comli.com/lsb-steganography-with-opencv/
+I use the most basic method which is the LSB for Least Significant Bit. A colour pixel is composed of three component BGR all this three are encoded on one byte. So the idea is to store information in the first bit of every pixels component (BGR). By this way in the worse of case the decimal value is different of one which is not visible with human eyes on the image. In practice if you don't have the space to store all your datas in the first of every pixel you should start using the second and so on. You have to keep in mind that more your store data into an image more it can be detected.
+
 
 Informations
 --------------
