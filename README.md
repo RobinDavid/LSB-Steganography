@@ -70,3 +70,9 @@ Binary steganography:
     f = open("res","wb") #Write the binary back to a file
     f.write(bin)
     f.close()
+
+
+License
+-------
+
+This software is MIT-Licensed.
