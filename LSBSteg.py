@@ -19,6 +19,28 @@ dealings in the Software.
 Except as contained in this notice, the name of the Robin David shall not be used in advertising or otherwise
 to promote the sale, use or other dealings in this Software without prior written authorization from the Robin David.
 '''
+
+"""
+How to install the dependencies on a mac
+----------------------------------------
+
+1) Reinstall brew.
+```bash
+rm -rf /usr/local/Cellar /usr/local/.git && brew cleanup
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+2) Install opencv
+```bash
+brew tap homebrew/science
+brew install opencv
+```
+3) Add the packages to python
+```bash
+mkdir -p $HOME/Library/Python/2.7/lib/python/site-packages
+echo 'import site; site.addsitedir("/usr/local/lib/python2.7/site-packages")' >> $HOME/Library/Python/2.7/lib/python/site-packages/homebrew.pth
+```
+"""
+
 import cv2.cv as cv
 import sys
 
