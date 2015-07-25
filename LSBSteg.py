@@ -1,3 +1,4 @@
+# coding=UTF-8
 '''
 Copyright © 2015, Robin David - MIT-Licensed
 
