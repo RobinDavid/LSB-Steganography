@@ -194,6 +194,50 @@ class LSBSteg():
         for i in range(l):
             output += chr(int(self.readByte(),2))
         return output
-    
+
+
+
+'''
+Methods to expose this functionality to the command-line
+'''
+def binary_steg_hide(image, binary, result):
+    carrier = cv.LoadImage(image)
+    steg = LSBSteg(carrier)
+    steg.hideBin(binary)
+    steg.saveImage(result)
+
+def binary_steg_reveal(steg_image, result):
+    inp = cv.LoadImage(steg_image)
+    steg = LSBSteg(inp)
+    bin = steg.unhideBin()
+    f = open(binary, "wb")
+    f.write(bin)
+    f.close()
+
+import argparse
+
+parser = argparse.ArgumentParser(description='This python program applies LSB Steganography to an image and some type of input')
+
+def main(av):
+    bgroup = parser. add_argument_group("Hide binary with steg")
+    bgroup.add_argument('-image', help='Provide the original image')
+    bgroup.add_argument('-binary', help='The binary file to be obfuscated in the image')
+    bgroup.add_argument('-steg-out', help='The resulting steganographic image')
+
+    bgroup = parser.add_argument_group("Reveal binary")
+    bgroup.add_argument('-steg-image', help='The steganographic image')
+    bgroup.add_argument('-out', help='The original binary')
+
+    args = parser.parse_args(av[1:])
+
+    if len(av) == 7:
+	binary_steg_hide(args.image, args.binary, args.steg_out)
+    elif len(av) == 5:
+        binary_steg_reveal(args.steg_image, args.out)
+    else:
+        print "Usage: '", av[0], "-h' for help", "\n", args
+
 if __name__=="__main__":
-    pass
+    from sys import argv as av
+    main(av)
+
