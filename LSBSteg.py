@@ -206,11 +206,11 @@ def binary_steg_hide(image, binary, result):
     steg.hideBin(binary)
     steg.saveImage(result)
 
-def binary_steg_reveal(steg_image, result):
+def binary_steg_reveal(steg_image, out):
     inp = cv.LoadImage(steg_image)
     steg = LSBSteg(inp)
     bin = steg.unhideBin()
-    f = open(binary, "wb")
+    f = open(out, "wb")
     f.write(bin)
     f.close()
 
