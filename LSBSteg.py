@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=UTF-8
+
 '''
 Copyright © 2015, Robin David - MIT-Licensed
 
@@ -50,13 +53,13 @@ class LSBSteg():
 
     def putBinaryValue(self, bits): #Put the bits in the image
         for c in bits:
-            val = list(self.image[self.curwidth,self.curheight]) #Get the pixel value as a list
+            val = list(self.image[self.curheight,self.curwidth]) #Get the pixel value as a list
             if int(c) == 1:
                 val[self.curchan] = int(val[self.curchan]) | self.maskONE #OR with maskONE
             else:
                 val[self.curchan] = int(val[self.curchan]) & self.maskZERO #AND with maskZERO
                 
-            self.image[self.curwidth,self.curheight] = tuple(val)
+            self.image[self.curheight,self.curwidth] = tuple(val)
             self.nextSpace() #Move "cursor" to the next space
         
     def nextSpace(self):#Move to the next slot were information can be taken or put
@@ -79,7 +82,7 @@ class LSBSteg():
             self.curchan +=1
 
     def readBit(self): #Read a single bit int the image
-        val = self.image[self.curwidth,self.curheight][self.curchan]
+        val = self.image[self.curheight,self.curwidth][self.curchan]
         val = int(val) & self.maskONE
         self.nextSpace()
         if val > 0:
