@@ -22,7 +22,7 @@ How to use it ?
 
 Text steganography:
 
-    from LSBSteg import LSBSteg
+    from LSBSteg import *
 
     #Hide
     str = "Hello World"
@@ -38,7 +38,7 @@ Text steganography:
 
 Image steganography:
 
-    from LSBSteg import LSBSteg
+    from LSBSteg import *
 
     #Hide
     imagetohide = cv.LoadImage("secret_image.jpg")
@@ -55,7 +55,7 @@ Image steganography:
 
 Binary steganography:
 
-    from LSBSteg import LSBSteg
+    from LSBSteg import *
 
     #Hide
     carrier = cv.LoadImage("image.jpg")
@@ -70,9 +70,3 @@ Binary steganography:
     f = open("res","wb") #Write the binary back to a file
     f.write(bin)
     f.close()
-
-
-License
--------
-
-This software is MIT-Licensed.
