@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding=UTF-8
 '''
 Copyright © 2015, Robin David - MIT-Licensed
 
@@ -17,6 +19,28 @@ dealings in the Software.
 Except as contained in this notice, the name of the Robin David shall not be used in advertising or otherwise
 to promote the sale, use or other dealings in this Software without prior written authorization from the Robin David.
 '''
+
+"""
+How to install the dependencies on a mac
+----------------------------------------
+
+1) Reinstall brew.
+```bash
+rm -rf /usr/local/Cellar /usr/local/.git && brew cleanup
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+2) Install opencv
+```bash
+brew tap homebrew/science
+brew install opencv
+```
+3) Add the packages to python
+```bash
+mkdir -p $HOME/Library/Python/2.7/lib/python/site-packages
+echo 'import site; site.addsitedir("/usr/local/lib/python2.7/site-packages")' >> $HOME/Library/Python/2.7/lib/python/site-packages/homebrew.pth
+```
+"""
+
 import cv2.cv as cv
 import sys
 
@@ -50,13 +74,13 @@ class LSBSteg():
 
     def putBinaryValue(self, bits): #Put the bits in the image
         for c in bits:
-            val = list(self.image[self.curwidth,self.curheight]) #Get the pixel value as a list
+            val = list(self.image[self.curheight,self.curwidth]) #Get the pixel value as a list
             if int(c) == 1:
                 val[self.curchan] = int(val[self.curchan]) | self.maskONE #OR with maskONE
             else:
                 val[self.curchan] = int(val[self.curchan]) & self.maskZERO #AND with maskZERO
                 
-            self.image[self.curwidth,self.curheight] = tuple(val)
+            self.image[self.curheight,self.curwidth] = tuple(val)
             self.nextSpace() #Move "cursor" to the next space
         
     def nextSpace(self):#Move to the next slot were information can be taken or put
@@ -79,7 +103,7 @@ class LSBSteg():
             self.curchan +=1
 
     def readBit(self): #Read a single bit int the image
-        val = self.image[self.curwidth,self.curheight][self.curchan]
+        val = self.image[self.curheight,self.curwidth][self.curchan]
         val = int(val) & self.maskONE
         self.nextSpace()
         if val > 0:
@@ -170,6 +194,50 @@ class LSBSteg():
         for i in range(l):
             output += chr(int(self.readByte(),2))
         return output
-    
+
+
+
+'''
+Methods to expose this functionality to the command-line
+'''
+def binary_steg_hide(image, binary, result):
+    carrier = cv.LoadImage(image)
+    steg = LSBSteg(carrier)
+    steg.hideBin(binary)
+    steg.saveImage(result)
+
+def binary_steg_reveal(steg_image, out):
+    inp = cv.LoadImage(steg_image)
+    steg = LSBSteg(inp)
+    bin = steg.unhideBin()
+    f = open(out, "wb")
+    f.write(bin)
+    f.close()
+
+import argparse
+
+parser = argparse.ArgumentParser(description='This python program applies LSB Steganography to an image and some type of input')
+
+def main(av):
+    bgroup = parser. add_argument_group("Hide binary with steg")
+    bgroup.add_argument('-image', help='Provide the original image')
+    bgroup.add_argument('-binary', help='The binary file to be obfuscated in the image')
+    bgroup.add_argument('-steg-out', help='The resulting steganographic image')
+
+    bgroup = parser.add_argument_group("Reveal binary")
+    bgroup.add_argument('-steg-image', help='The steganographic image')
+    bgroup.add_argument('-out', help='The original binary')
+
+    args = parser.parse_args(av[1:])
+
+    if len(av) == 7:
+	binary_steg_hide(args.image, args.binary, args.steg_out)
+    elif len(av) == 5:
+        binary_steg_reveal(args.steg_image, args.out)
+    else:
+        print "Usage: '", av[0], "-h' for help", "\n", args
+
 if __name__=="__main__":
-    pass
+    from sys import argv as av
+    main(av)
+

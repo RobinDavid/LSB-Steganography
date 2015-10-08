@@ -17,6 +17,51 @@ To program all to hide everyhing, if there is enough space in the image. The mai
 * hideImage: You provide an OpenCV image and the method iterate every pixels to hide them. A good practice is to have a carrier 8 time bigger than the image to hide (so that every pixels will be put only in the first bit.
 * hideBinary: You provide the path of the binary and it wil be hide. So this method can take any kind of files.
 
+
+Command-line
+------------
+
+```bash
+> python LSBSteg.py -h
+usage: LSBSteg.py [-h] [-image IMAGE] [-binary BINARY] [-steg-out STEG_OUT]
+                  [-steg-image STEG_IMAGE] [-out OUT]
+
+This python program applies LSB Steganography to an image and some type of
+input
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Hide binary with steg:
+  -image IMAGE          Provide the original image
+  -binary BINARY        The binary file to be obfuscated in the image
+  -steg-out STEG_OUT    The resulting steganographic image
+
+Reveal binary:
+  -steg-image STEG_IMAGE
+                        The steganographic image
+  -out OUT              The original binary
+```
+
+Hide the message:
+```bash
+> python LSBSteg.py -image original.png -binary original.bin -steg-out steg.png
+```
+
+Reveal the hidden message:
+```bash
+> python LSBSteg.py -steg-image steg.png -out bin
+```
+
+Confirm:
+```bash
+> cat original.bin | md5
+42ABC...
+> cat bin | md5
+...
+```
+
+
 How to use it ?
 ---------------
 
