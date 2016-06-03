@@ -1,21 +1,21 @@
 LSB-Steganography
 =================
 
-Python program to steganography files into images using the Least Significant Bit technics.
+Python program based on stegonographical methods to hide files in images using the Least Significant Bit technique.
 
-I use the most basic method which is the LSB for Least Significant Bit. A colour pixel is composed of three component BGR all this three are encoded on one byte. So the idea is to store information in the first bit of every pixels component (BGR). By this way in the worse of case the decimal value is different of one which is not visible with human eyes on the image. In practice if you don't have the space to store all your datas in the first of every pixel you should start using the second and so on. You have to keep in mind that more your store data into an image more it can be detected.
+I used the most basic method which is the least significant bit. A colour pixel is composed of red, green and blue, encoded on one byte. The idea is to store information in the first bit of every pixel's RGB component. In the worst case, the decimal value is different by one which is not visible to the human eye. In practice, if you don't have space to store all of your data in the first bit of every pixel you should start using the second bit, and so on. You have to keep in mind that the more your store data in an image, the more it can be detected.
 
 
-Informations
---------------
+Information
+-----------
 
-LSBSteg module is based on OpenCV to hide datas in images. It uses the first bit (so the lowest) of every pixels and every colours
-of an image. The code is quite simple to understand. If every first bits have been used the module start using the second so bigger the datas are more the image will be alterated.
-To program all to hide everyhing, if there is enough space in the image. The main functions are:
+LSBSteg module is based on OpenCV to hide datas in images. It uses the first bit of every pixel, and every colour
+of an image. The code is quite simple to understand; If every first bit has been used, the module starts using the second bit, so the larger the data, the more the image is altered.
+The program can hide all of the data if there is enough space in the image. The main functions are:
 
-* hideText: You provide directly your string and the program manage to hide it
-* hideImage: You provide an OpenCV image and the method iterate every pixels to hide them. A good practice is to have a carrier 8 time bigger than the image to hide (so that every pixels will be put only in the first bit.
-* hideBinary: You provide the path of the binary and it wil be hide. So this method can take any kind of files.
+* hideText: You provide a string and the program hides it
+* hideImage: You provide an OpenCV image and the method iterates for every pixel in order to hide them. A good practice is to have a carrier 8 times bigger than the image to hide (so that each pixel will be put only in the first bit).
+* hideBinary: You provide a binary file to hide; This method can obfuscate any kind of file.
 
 
 Command-line
@@ -62,8 +62,8 @@ Confirm:
 ```
 
 
-How to use it ?
----------------
+How to use it?
+--------------
 
 Text steganography:
 
