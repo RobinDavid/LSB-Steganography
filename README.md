@@ -13,9 +13,12 @@ LSBSteg module is based on OpenCV to hide data in images. It uses the first bit 
 of an image. The code is quite simple to understand; If every first bit has been used, the module starts using the second bit, so the larger the data, the more the image is altered.
 The program can hide all of the data if there is enough space in the image. The main functions are:
 
-* hideText: You provide a string and the program hides it
-* hideImage: You provide an OpenCV image and the method iterates for every pixel in order to hide them. A good practice is to have a carrier 8 times bigger than the image to hide (so that each pixel will be put only in the first bit).
-* hideBinary: You provide a binary file to hide; This method can obfuscate any kind of file.
+* encode_text: You provide a string and the program hides it
+* encode_image: You provide an OpenCV image and the method iterates for every pixel in order to hide them. A good practice is to have a carrier 8 times bigger than the image to hide (so that each pixel will be put only in the first bit).
+* encode_binary: You provide a binary file to hide; This method can obfuscate any kind of file.
+
+> *Only images without compression are supported*, namely not JPEG as LSB bits
+might get tampered during the compression phase.
 
 Installation
 ------------
@@ -26,106 +29,71 @@ This tool only require OpenCV and its dependencies.
 pip install -r requirements.txt
 ```
 
-
-
-Command-line
-------------
+Usage
+-----
 
 ```bash
-> python LSBSteg.py -h
-usage: LSBSteg.py [-h] [-image IMAGE] [-binary BINARY] [-steg-out STEG_OUT]
-                  [-steg-image STEG_IMAGE] [-out OUT]
+LSBSteg.py
 
-This python program applies LSB Steganography to an image and some type of
-input
+Usage:
+  LSBSteg.py encode -i <input> -o <output> -f <file>
+  LSBSteg.py decode -i <input> -o <output>
 
-optional arguments:
-  -h, --help            show this help message and exit
-
-Hide binary with steg:
-  -image IMAGE          Provide the original image
-  -binary BINARY        The binary file to be obfuscated in the image
-  -steg-out STEG_OUT    The resulting steganographic image
-
-Reveal binary:
-  -steg-image STEG_IMAGE
-                        The steganographic image
-  -out OUT              The original binary
-```
-
-Hide the message:
-```bash
-> python LSBSteg.py -image original.png -binary original.bin -steg-out steg.png
-```
-
-Reveal the hidden message:
-```bash
-> python LSBSteg.py -steg-image steg.png -out bin
-```
-
-Confirm:
-```bash
-> cat original.bin | md5
-42ABC...
-> cat bin | md5
-...
+Options:
+  -h, --help                Show this help
+  --version                 Show the version
+  -f,--file=<file>          File to hide
+  -i,--in=<input>           Input image (carrier)
+  -o,--out=<output>         Output image (or extracted file)
 ```
 
 
 Python module
 -------------
 
-Text steganography:
+Text encoding:
 
-    from LSBSteg import LSBSteg
+```python
+#encoding
+steg = LSBSteg(cv2.imread("my_image.png"))
+img_encoded = steg.encode_text("my message")
+cv2.imwrite("my_new_image.png", img_encoded)
 
-    #Hide
-    str = "Hello World"
-    carrier = cv.LoadImage("image.jpg")
-    steg = LSBSteg(carrier)
-    steg.hideText(str)
-    steg.saveImage("res.png") #Image that contain datas
-
-    #Unhide    
-    im = cv.LoadImage("res.png")
-    steg = LSBSteg(im)
-    print "Text value:",steg.unhideText()
+#decoding
+im = cv2.imread("my_new_image.png")
+steg = LSBSteg(im)
+print("Text value:",steg.decode_text())
+```
 
 Image steganography:
 
-    from LSBSteg import LSBSteg
+```python
+#encoding
+steg = LSBSteg(cv2.imread("carrier.png")
+new_im = steg.encode_image(cv2.imread("secret_image.jpg"))
+cv2.imwrite("new_image.png", new_im)
 
-    #Hide
-    imagetohide = cv.LoadImage("secret_image.jpg")
-    carrier = cv.LoadImage("image.jpg")
-    steg = LSBSteg(carrier)
-    steg.hideImage(imagetohide)
-    steg.saveImage("res.png")
-
-    #Unhide
-    inp = cv.LoadImage("res.png")
-    steg = LSBSteg(inp)
-    dec = steg.unhideImage()
-    cv.SaveImage("recovered.png", dec) #Image retrieve into the other image
+#decoding
+steg = LSBSteg("new_image.png")
+orig_im = steg.decode_image()
+cv.SaveImage("recovered.png", orig_im)
+```
 
 Binary steganography:
 
-    from LSBSteg import LSBSteg
+```python
+#encoding
+steg = LSBSteg(cv2.imread("carrier.png"))
+data = open("my_data.bin", "rb").read()
+new_img = steg.encode_binary(data)
+cv2.imwrite("new_image.png", new_img)
 
-    #Hide
-    carrier = cv.LoadImage("image.jpg")
-    steg = LSBSteg(carrier)
-    steg.hideBin("ls") #I took the first binary I found
-    steg.saveImage("res.png")
-
-    #Unhide
-    inp = cv.LoadImage("res.png")
-    steg = LSBSteg(inp)
-    bin = steg.unhideBin()
-    f = open("res","wb") #Write the binary back to a file
-    f.write(bin)
-    f.close()
-
+#decoding
+steg = LSBSteg(cv2.imread("new_image.png"))
+binary = steg.decode_binary()
+with open("recovered.bin", "rb") as f:
+    f.write(data)
+```python
 
 License
 -------
