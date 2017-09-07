@@ -9,13 +9,23 @@ I used the most basic method which is the least significant bit. A colour pixel 
 Information
 -----------
 
-LSBSteg module is based on OpenCV to hide datas in images. It uses the first bit of every pixel, and every colour
+LSBSteg module is based on OpenCV to hide data in images. It uses the first bit of every pixel, and every colour
 of an image. The code is quite simple to understand; If every first bit has been used, the module starts using the second bit, so the larger the data, the more the image is altered.
 The program can hide all of the data if there is enough space in the image. The main functions are:
 
 * hideText: You provide a string and the program hides it
 * hideImage: You provide an OpenCV image and the method iterates for every pixel in order to hide them. A good practice is to have a carrier 8 times bigger than the image to hide (so that each pixel will be put only in the first bit).
 * hideBinary: You provide a binary file to hide; This method can obfuscate any kind of file.
+
+Installation
+------------
+
+This tool only require OpenCV and its dependencies.
+
+```bash
+pip install -r requirements.txt
+```
+
 
 
 Command-line
@@ -62,8 +72,8 @@ Confirm:
 ```
 
 
-How to use it?
---------------
+Python module
+-------------
 
 Text steganography:
 
