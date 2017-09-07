@@ -60,7 +60,7 @@ class LSBSteg():
                 if self.curheight == self.height-1:#Or the first channel of the first pixel of the next line
                     self.curheight = 0
                     if self.maskONE == 128: #Mask 1000000, so the last mask
-                        raise SteganographyException("Image filled")
+                        raise SteganographyException("No available slot remaining (image filled)")
                     else: #Or instead of using the first bit start using the second and so on..
                         self.maskONE = self.maskONEValues.pop(0)
                         self.maskZERO = self.maskZEROValues.pop(0)
@@ -175,7 +175,7 @@ def main():
     steg = LSBSteg(in_img)
 
     if args['encode']:
-        data open(args["--file"], "rb").read()
+        data = open(args["--file"], "rb").read()
         res = steg.encode_binary(data)
         cv2.imwrite(out_f, res)
 
