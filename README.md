@@ -93,7 +93,9 @@ steg = LSBSteg(cv2.imread("new_image.png"))
 binary = steg.decode_binary()
 with open("recovered.bin", "rb") as f:
     f.write(data)
-```python
+    
+```
+
 
 License
 -------
