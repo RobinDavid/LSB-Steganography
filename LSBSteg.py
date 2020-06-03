@@ -173,8 +173,15 @@ def main():
     out_f = args["--out"]
     in_img = cv2.imread(in_f)
     steg = LSBSteg(in_img)
+    lossy_formats = ["jpeg", "jpg"]
 
     if args['encode']:
+        #Handling lossy format
+        out_f, out_ext = out_f.split(".")
+        if out_ext in lossy_formats:
+            out_f = out_f + ".png"
+            print("Output file changed to ", out_f)
+
         data = open(args["--file"], "rb").read()
         res = steg.encode_binary(data)
         cv2.imwrite(out_f, res)
