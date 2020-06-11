@@ -76,49 +76,37 @@ class LSBSteg():
         val = int(val) & self.maskONE
         self.next_slot()
         if val > 0:
-            return "1"
+            return 1
         else:
-            return "0"
+            return 0
     
     def read_byte(self):
         return self.read_bits(8)
     
     def read_bits(self, nb): #Read the given number of bits
-        bits = ""
+        bits = 0
         for i in range(nb):
-            bits += self.read_bit()
+            bits = (bits << 1) | self.read_bit()
         return bits
-
-    def byteValue(self, val):
-        return self.binary_value(val, 8)
         
-    def binary_value(self, val, bitsize): #Return the binary value of an int as a byte
-        binval = bin(val)[2:]
-        if len(binval) > bitsize:
-            raise SteganographyException("binary value larger than the expected size")
-        while len(binval) < bitsize:
-            binval = "0"+binval
-        return binval
-
     def encode_text(self, txt):
         l = len(txt)
-        binl = self.binary_value(l, 16) #Length coded on 2 bytes so the text size can be up to 65536 bytes long
-        self.put_binary_value(binl) #Put text length coded on 4 bytes
+        self.put_binary_value(format(l, '016b')) #Put text length coded on 4 bytes
         for char in txt: #And put all the chars
             c = ord(char)
-            self.put_binary_value(self.byteValue(c))
+            self.put_binary_value(format(c, '08b'))
         return self.image
        
     def decode_text(self):
         ls = self.read_bits(16) #Read the text size in bytes
         l = int(ls,2)
         i = 0
-        unhideTxt = ""
+        unhideTxt = []
         while i < l: #Read all bytes of the text
             tmp = self.read_byte() #So one byte
             i += 1
-            unhideTxt += chr(int(tmp,2)) #Every chars concatenated to str
-        return unhideTxt
+            unhideTxt.append(chr(tmp)) #Every chars concatenated to str
+        return "".join(unhideTxt)
 
     def encode_image(self, imtohide):
         w = imtohide.width
@@ -133,7 +121,7 @@ class LSBSteg():
             for w in range(imtohide.width):
                 for chan in range(imtohide.channels):
                     val = imtohide[h,w][chan]
-                    self.put_binary_value(self.byteValue(int(val)))
+                    self.put_binary_value(format(int(val), '08b'))
         return self.image
 
                     
@@ -153,17 +141,17 @@ class LSBSteg():
         l = len(data)
         if self.width*self.height*self.nbchannels < l+64:
             raise SteganographyException("Carrier image not big enough to hold all the datas to steganography")
-        self.put_binary_value(self.binary_value(l, 64))
+        self.put_binary_value(format(l, '064b'))
         for byte in data:
             byte = byte if isinstance(byte, int) else ord(byte) # Compat py2/py3
-            self.put_binary_value(self.byteValue(byte))
+            self.put_binary_value(format(int(byte), '08b'))
         return self.image
 
     def decode_binary(self):
-        l = int(self.read_bits(64), 2)
-        output = b""
+        l = self.read_bits(64)
+        output = bytearray()
         for i in range(l):
-            output += chr(int(self.read_byte(),2)).encode("utf-8")
+            output.extend([self.read_byte()])
         return output
 
 
@@ -183,8 +171,8 @@ def main():
         raw = steg.decode_binary()
         with open(out_f, "wb") as f:
             f.write(raw)
+        print(raw)
 
 
 if __name__=="__main__":
     main()
-
