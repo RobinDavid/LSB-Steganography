@@ -148,10 +148,10 @@ class LSBSteg():
         return self.image
 
     def decode_binary(self):
-        l = int(self.read_bits(64), 2)
+        l = self.read_bits(64)
         output = bytearray()
         for i in range(l):
-            output.extend([int(self.read_byte(),2)])
+            output.extend([self.read_byte()])
         return output
 
 
