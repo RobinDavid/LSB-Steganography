@@ -108,17 +108,17 @@ class LSBSteg():
             c = ord(char)
             self.put_binary_value(self.byteValue(c))
         return self.image
-       
+      
     def decode_text(self):
         ls = self.read_bits(16) #Read the text size in bytes
         l = int(ls,2)
         i = 0
-        unhideTxt = ""
+        unhideTxt = []
         while i < l: #Read all bytes of the text
             tmp = self.read_byte() #So one byte
             i += 1
-            unhideTxt += chr(int(tmp,2)) #Every chars concatenated to str
-        return unhideTxt
+            unhideTxt.append(chr(int(tmp,2))) #Every chars concatenated to str
+        return "".join(unhideTxt)
 
     def encode_image(self, imtohide):
         w = imtohide.width
