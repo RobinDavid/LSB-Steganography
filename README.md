@@ -69,7 +69,7 @@ Image steganography:
 
 ```python
 #encoding
-steg = LSBSteg(cv2.imread("carrier.png")
+steg = LSBSteg(cv2.imread("carrier.png"))
 new_im = steg.encode_image(cv2.imread("secret_image.jpg"))
 cv2.imwrite("new_image.png", new_im)
 
