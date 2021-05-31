@@ -181,6 +181,8 @@ def main():
         if out_ext in lossy_formats:
             out_f = out_f + ".png"
             print("Output file changed to ", out_f)
+        else:
+            out_f = out_f + "." + out_ext
 
         data = open(args["--file"], "rb").read()
         res = steg.encode_binary(data)
