@@ -69,14 +69,14 @@ Image steganography:
 
 ```python
 #encoding
-steg = LSBSteg(cv2.imread("carrier.png")
-new_im = steg.encode_image(cv2.imread("secret_image.jpg"))
+steg = LSBSteg(cv2.imread("carrier.png"))
+new_im = steg.encode_image(cv2.imread("secret_img.jpg"))
 cv2.imwrite("new_image.png", new_im)
 
 #decoding
-steg = LSBSteg("new_image.png")
+steg = LSBSteg(cv2.imread("encoded.png"))
 orig_im = steg.decode_image()
-cv.SaveImage("recovered.png", orig_im)
+cv2.imwrite("recovered.png", orig_im)
 ```
 
 Binary steganography:
