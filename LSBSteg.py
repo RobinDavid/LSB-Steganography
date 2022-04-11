@@ -3,13 +3,14 @@
 """LSBSteg.py
 
 Usage:
-  LSBSteg.py encode -i <input> -o <output> -f <file>
-  LSBSteg.py decode -i <input> -o <output>
+  LSBSteg.py encode -t <type> -i <input> -o <output> -s <secret>
+  LSBSteg.py decode -t <type> -i <input> -o <output>
 
 Options:
   -h, --help                Show this help
   --version                 Show the version
-  -f,--file=<file>          File to hide
+  -t, --type=<type>         Type of secret to hide [ image | text | binary ]
+  -s,--secret=<secret>      File or text to hide (-f "secret message" or -f secret.bin)
   -i,--in=<input>           Input image (carrier)
   -o,--out=<output>         Output image (or extracted file)
 """
@@ -169,6 +170,7 @@ class LSBSteg():
 
 def main():
     args = docopt.docopt(__doc__, version="0.2")
+    type = args["--type"]
     in_f = args["--in"]
     out_f = args["--out"]
     in_img = cv2.imread(in_f)
@@ -182,14 +184,34 @@ def main():
             out_f = out_name + ".png"
             print("Output file changed to ", out_f)
 
-        data = open(args["--file"], "rb").read()
-        res = steg.encode_binary(data)
-        cv2.imwrite(out_f, res)
+        if type == "binary":
+            data = open(args["--secret"], "rb").read()
+            res = steg.encode_binary(data)
+            cv2.imwrite(out_f, res)
+        elif type == "image":
+            new_im = steg.encode_image(cv2.imread(args["--secret"]))
+            cv2.imwrite(out_f, new_im)
+        elif type == "text":
+            img_encoded = steg.encode_text(args["--secret"])
+            cv2.imwrite(out_f, img_encoded)
+        else:
+            print("Incorrect type. Choose either 'image', 'binary', or 'text'")
+            exit()
 
     elif args["decode"]:
-        raw = steg.decode_binary()
-        with open(out_f, "wb") as f:
-            f.write(raw)
+        if type == "binary":
+            raw = steg.decode_binary()
+            with open(out_f, "wb") as f:
+                f.write(raw)
+        elif type == "image":
+            orig_im = steg.decode_image()
+            cv2.imwrite(out_f, orig_im)
+        elif type == "text":
+            with open(out_f, "w") as f:
+                f.write(steg.decode_text())
+        else:
+            print("Incorrect type. Choose either 'image', 'binary', or 'text'")
+            exit()
 
 
 if __name__=="__main__":
