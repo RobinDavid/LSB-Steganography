@@ -36,13 +36,14 @@ Usage
 LSBSteg.py
 
 Usage:
-  LSBSteg.py encode -i <input> -o <output> -f <file>
-  LSBSteg.py decode -i <input> -o <output>
+  LSBSteg.py encode -t <type> -i <input> -o <output> -s <secret>
+  LSBSteg.py decode -t <type> -i <input> -o <output>
 
 Options:
   -h, --help                Show this help
   --version                 Show the version
-  -f,--file=<file>          File to hide
+  -t, --type=<type>         Type of secret to hide [ image | text | binary ]
+  -s,--secret=<secret>      File or text to hide (-f "secret message" or -f secret.bin)
   -i,--in=<input>           Input image (carrier)
   -o,--out=<output>         Output image (or extracted file)
 ```
