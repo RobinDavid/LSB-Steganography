@@ -3,13 +3,14 @@
 """LSBSteg.py
 
 Usage:
-  LSBSteg.py encode -i <input> -o <output> -f <file>
-  LSBSteg.py decode -i <input> -o <output>
+  LSBSteg.py encode -t <type> -i <input> -o <output> -s <secret>
+  LSBSteg.py decode -t <type> -i <input> -o <output>
 
 Options:
   -h, --help                Show this help
   --version                 Show the version
-  -f,--file=<file>          File to hide
+  -t, --type=<type>         Type of secret to hide [ image | text | binary ]
+  -s,--secret=<secret>      File or text to hide (-f "secret message" or -f secret.bin)
   -i,--in=<input>           Input image (carrier)
   -o,--out=<output>         Output image (or extracted file)
 """
@@ -121,29 +122,30 @@ class LSBSteg():
         return unhideTxt
 
     def encode_image(self, imtohide):
-        w = imtohide.width
-        h = imtohide.height
-        if self.width*self.height*self.nbchannels < w*h*imtohide.channels:
+        height, width, nbchannels = imtohide.shape
+        if self.width*self.height*self.nbchannels < width*height*nbchannels:
             raise SteganographyException("Carrier image not big enough to hold all the datas to steganography")
-        binw = self.binary_value(w, 16) #Width coded on to byte so width up to 65536
-        binh = self.binary_value(h, 16)
+        binw = self.binary_value(width, 16) #Width coded on to byte so width up to 65536
+        binh = self.binary_value(height, 16)
+        binc = self.binary_value(nbchannels, 2) # need 2 bits for channel number
         self.put_binary_value(binw) #Put width
         self.put_binary_value(binh) #Put height
-        for h in range(imtohide.height): #Iterate the hole image to put every pixel values
-            for w in range(imtohide.width):
-                for chan in range(imtohide.channels):
+        self.put_binary_value(binc) #Put channels
+        for h in range(height): #Iterate the hole image to put every pixel values
+            for w in range(width):
+                for chan in range(nbchannels):
                     val = imtohide[h,w][chan]
                     self.put_binary_value(self.byteValue(int(val)))
         return self.image
 
-                    
     def decode_image(self):
         width = int(self.read_bits(16),2) #Read 16bits and convert it in int
         height = int(self.read_bits(16),2)
-        unhideimg = np.zeros((width,height, 3), np.uint8) #Create an image in which we will put all the pixels read
+        nbchannels = int(self.read_bits(2), 2)
+        unhideimg = np.zeros((height,width,3), np.uint8) #Create an image in which we will put all the pixels read
         for h in range(height):
             for w in range(width):
-                for chan in range(unhideimg.channels):
+                for chan in range(nbchannels):
                     val = list(unhideimg[h,w])
                     val[chan] = int(self.read_byte(),2) #Read the value
                     unhideimg[h,w] = tuple(val)
@@ -169,6 +171,7 @@ class LSBSteg():
 
 def main():
     args = docopt.docopt(__doc__, version="0.2")
+    type = args["--type"]
     in_f = args["--in"]
     out_f = args["--out"]
     in_img = cv2.imread(in_f)
@@ -177,19 +180,39 @@ def main():
 
     if args['encode']:
         #Handling lossy format
-        out_f, out_ext = out_f.split(".")
+        out_name, out_ext = out_f.split(".")
         if out_ext in lossy_formats:
-            out_f = out_f + ".png"
+            out_f = out_name + ".png"
             print("Output file changed to ", out_f)
 
-        data = open(args["--file"], "rb").read()
-        res = steg.encode_binary(data)
-        cv2.imwrite(out_f, res)
+        if type == "binary":
+            data = open(args["--secret"], "rb").read()
+            res = steg.encode_binary(data)
+            cv2.imwrite(out_f, res)
+        elif type == "image":
+            new_im = steg.encode_image(cv2.imread(args["--secret"]))
+            cv2.imwrite(out_f, new_im)
+        elif type == "text":
+            img_encoded = steg.encode_text(args["--secret"])
+            cv2.imwrite(out_f, img_encoded)
+        else:
+            print("Incorrect type. Choose either 'image', 'binary', or 'text'")
+            exit()
 
     elif args["decode"]:
-        raw = steg.decode_binary()
-        with open(out_f, "wb") as f:
-            f.write(raw)
+        if type == "binary":
+            raw = steg.decode_binary()
+            with open(out_f, "wb") as f:
+                f.write(raw)
+        elif type == "image":
+            orig_im = steg.decode_image()
+            cv2.imwrite(out_f, orig_im)
+        elif type == "text":
+            with open(out_f, "w") as f:
+                f.write(steg.decode_text())
+        else:
+            print("Incorrect type. Choose either 'image', 'binary', or 'text'")
+            exit()
 
 
 if __name__=="__main__":

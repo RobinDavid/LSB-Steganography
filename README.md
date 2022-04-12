@@ -36,13 +36,14 @@ Usage
 LSBSteg.py
 
 Usage:
-  LSBSteg.py encode -i <input> -o <output> -f <file>
-  LSBSteg.py decode -i <input> -o <output>
+  LSBSteg.py encode -t <type> -i <input> -o <output> -s <secret>
+  LSBSteg.py decode -t <type> -i <input> -o <output>
 
 Options:
   -h, --help                Show this help
   --version                 Show the version
-  -f,--file=<file>          File to hide
+  -t, --type=<type>         Type of secret to hide [ image | text | binary ]
+  -s,--secret=<secret>      File or text to hide (-f "secret message" or -f secret.bin)
   -i,--in=<input>           Input image (carrier)
   -o,--out=<output>         Output image (or extracted file)
 ```
@@ -69,14 +70,14 @@ Image steganography:
 
 ```python
 #encoding
-steg = LSBSteg(cv2.imread("carrier.png")
-new_im = steg.encode_image(cv2.imread("secret_image.jpg"))
+steg = LSBSteg(cv2.imread("carrier.png"))
+new_im = steg.encode_image(cv2.imread("secret_img.jpg"))
 cv2.imwrite("new_image.png", new_im)
 
 #decoding
-steg = LSBSteg("new_image.png")
+steg = LSBSteg(cv2.imread("encoded.png"))
 orig_im = steg.decode_image()
-cv.SaveImage("recovered.png", orig_im)
+cv2.imwrite("recovered.png", orig_im)
 ```
 
 Binary steganography:
