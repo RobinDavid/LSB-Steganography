@@ -181,7 +181,9 @@ def main():
         if out_ext in lossy_formats:
             out_f = out_f + ".png"
             print("Output file changed to ", out_f)
-
+        else: # restore the original file name and extension; avoid missing extension in cv2.imwrite
+            out_f = args["--out"]
+            
         data = open(args["--file"], "rb").read()
         res = steg.encode_binary(data)
         cv2.imwrite(out_f, res)
